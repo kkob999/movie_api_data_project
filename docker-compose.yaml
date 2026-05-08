@@ -1,0 +1,61 @@
+version: '3.8'
+
+x-airflow-common: &airflow-common
+  image: apache/airflow:2.9.0
+  environment:
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__WEBSERVER__SECRET_KEY: '49e8964d602336338b006c04f4400e96030999553f191590e8c8a149c719877b'
+    AIRFLOW__CORE__FERNET_KEY: 'lh_5X2D8XvW4Y-G-R-Xv0lG6Y-D_L-Xv_Xv_Xv_Xv_X='
+    
+    # TIMEZONE FIX: Helps align your local time with Airflow
+    AIRFLOW__WEBSERVER__DEFAULT_UI_TIMEZONE: 'Asia/Bangkok'
+    AIRFLOW__CORE__DEFAULT_TIMEZONE: 'utc'
+    
+    # STOP THE REPEAT LOOP:
+    AIRFLOW__SCHEDULER__SCHEDULER_ZOMBIE_TASK_THRESHOLD: '600'
+    AIRFLOW__SCHEDULER__CATCHUP_BY_DEFAULT: 'false'
+    AIRFLOW__CORE__KILLED_TASK_CLEANUP_TIME: '604800'
+    
+    _PIP_ADDITIONAL_REQUIREMENTS: 'pandas sqlalchemy psycopg2-binary python-dotenv'
+    TMDB_API_KEY: ${TMDB_API_KEY}
+    DB_URL: ${DB_URL}
+  volumes:
+    - ./dags:/opt/airflow/dags
+    - ./pipeline:/opt/airflow/pipeline
+    - ./setup:/opt/airflow/setup
+    - ./logs:/opt/airflow/logs
+  depends_on:
+    postgres:
+      condition: service_healthy
+
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 5s
+      retries: 5
+
+  airflow-init:
+    <<: *airflow-common
+    command: version
+    entrypoint: /bin/bash -c "airflow db init && airflow users create --username admin --password admin --firstname admin --lastname admin --role Admin --email admin@example.com"
+
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 10s
+      retries: 5
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
