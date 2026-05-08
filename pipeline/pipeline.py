@@ -19,7 +19,7 @@ def run_pipeline():
     load(movies_df, movie_genres_df)
 
     print("\n" + "=" * 40)
-    print("✅ Pipeline completed successfully.")
+    print("Pipeline completed successfully ✅")
     print("=" * 40)
 
 

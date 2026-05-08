@@ -61,11 +61,7 @@ def transform(df: pd.DataFrame, genre_map: dict) -> tuple[pd.DataFrame, pd.DataF
     genres_rows = []
     
     for _, row in df.iterrows():
-        print("RAW:", row["genre_ids"], type(row["genre_ids"]))
         for genre_id in row["genre_ids"]:
-            
-            print("GENRE_ID:", genre_id, type(genre_id))
-            print(genre_map.get(genre_id, "Unknown"))
 
             genres_rows.append({
                 "tmdb_id": row["id"],
@@ -74,8 +70,5 @@ def transform(df: pd.DataFrame, genre_map: dict) -> tuple[pd.DataFrame, pd.DataF
             })
 
     movie_genres_df = pd.DataFrame(genres_rows)
-
-    print(f"movies_df:       {len(movies_df)} rows")
-    print(f"movie_genres_df: {len(movie_genres_df)} rows")
 
     return movies_df, movie_genres_df

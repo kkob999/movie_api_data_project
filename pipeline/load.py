@@ -17,7 +17,7 @@ def get_engine():
     )
 
 def load(movies_df: pd.DataFrame, movie_genres_df: pd.DataFrame) -> None:
-    print("🚀 Starting Bulk Load...")
+    print("Starting Load...")
     engine = get_engine()
 
     try:
@@ -51,6 +51,6 @@ def load(movies_df: pd.DataFrame, movie_genres_df: pd.DataFrame) -> None:
                     ON CONFLICT (tmdb_id, genre_id) DO NOTHING
                 """), genre_records)
                 
-        print("✅ Bulk Load Finished!")
+        print("Load Finished!")
     finally:
         engine.dispose()
