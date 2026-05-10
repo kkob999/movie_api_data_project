@@ -64,24 +64,24 @@ movie_api_data_project/
 |---|---|---|
 | tmdb_id | INTEGER | Primary key from TMDB |
 | title | TEXT | Movie title |
-| language | VARCHAR | Original language code |
-| release_date | DATE | Release date |
-| rating | NUMERIC | TMDB vote average |
-| vote_count | INTEGER | Number of votes |
-| popularity | NUMERIC | TMDB raw popularity score |
+| language | VARCHAR(10) | Original language code e.g. `en`, `ja` |
+| release_date | DATE | Release date (NULL if not available) |
+| rating | NUMERIC(5, 3) | TMDB vote average e.g. `8.444` |
+| vote_count | INTEGER | Number of votes on TMDB |
+| popularity | NUMERIC(10, 3) | TMDB raw popularity score |
 | overview | TEXT | Movie description |
-| source_list | VARCHAR | `popular`, `top_rated`, or `both` |
-| scraped_at | TIMESTAMPTZ | When the data was fetched |
-| source_url | TEXT | API endpoint used |
-| pipeline_version | VARCHAR | Pipeline version tag |
-| decade | VARCHAR | Derived decade bucket e.g. `2020s` |
-| rating_tier | VARCHAR | `Master Piece`, `Excellent`, `Good`, `Average`, `Below Average` |
-| popularity_score | NUMERIC | Normalized score: `(rating/10) × log10(vote_count)` |
+| source_list | VARCHAR(20) | `popular`, `top_rated`, or `both` |
+| scraped_at | TIMESTAMPTZ | Timestamp when data was fetched (UTC) |
+| source_url | TEXT | TMDB API endpoint used |
+| pipeline_version | VARCHAR(20) | Pipeline version tag e.g. `1.0.0` |
+| decade | VARCHAR(10) | Derived decade bucket e.g. `2020s` |
+| rating_tier | VARCHAR(20) | `Master Piece`, `Excellent`, `Good`, `Average`, `Below Average` |
+| popularity_score | NUMERIC(10, 4) | Normalized score: `(rating / 10) × log10(vote_count)` |
 
 **movie_genres** table
 | Column | Type | Description |
 |---|---|---|
-| tmdb_id | INTEGER | Foreign key → movies |
+| tmdb_id | INTEGER | Foreign key referencing `movies.tmdb_id` |
 | genre_id | INTEGER | TMDB genre ID |
 | genre_name | TEXT | Genre name e.g. `Action`, `Drama` |
 
