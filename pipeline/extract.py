@@ -26,7 +26,6 @@ def fetch_genre_map() -> dict:
     response = requests.get(url, headers=HEADERS, params=params)
     response.raise_for_status()
     genres = response.json().get("genres", [])
-    print({g["id"]: g["name"] for g in genres})
     return {g["id"]: g["name"] for g in genres}
 
 
